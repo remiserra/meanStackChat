@@ -1,0 +1,11 @@
+---
+applications:
+- memory: 512M
+  instances: 1
+  name: meanStackChat
+  host: meanStackChat
+  domain: mybluemix.net
+  disk_quota: 1024M
+  services:
+  - Compose for MongoDB-e3
+    my-tone-analyzer-service  

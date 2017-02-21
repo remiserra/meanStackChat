@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+	<h2>Chat demo powered by IBM Bluemix</h2>
+	Chat with your friends, and let Watson detect the sentiments in the conversation!</br>
+<hr/>
+    <ng-view></ng-view>
+
+    <!-- Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-resource.min.js"></script>
+
+    <!-- Template -->
+    <script type="text/ng-template" id="/messages.html">
+      From:	<input type="text" ng-model="msgSearchInfo.from"><br/>
+      To:	<input type="text" ng-model="msgSearchInfo.to"><br/>
+      <button ng-click="refreshBtn()">Refresh</button><br/>
+       
+      Filter: <select ng-model="msgSearchInfo.tone">
+	      	<option value="">---</option>
+	      	<option value=">:">Anger</option> 
+			<option value=":$">Disgust</option>
+			<option value=":O">Fear</option> 
+			<option value=":)">Joy</option> 
+			<option value=":(">Sadness</option>			
+	    </select><br>
+      
+      <ul>
+        <li ng-repeat="message in messagesList | orderBy:['time'] | messageFilter:msgSearchInfo">
+          <input type="checkbox" ng-model="message.read" ng-change="updateMsg($index)">
+          {{message.time | date:'yyyy-MM-dd HH:mm:ss'}} - {{message.from}} to {{message.to}}	: {{message.text}}	<b>{{message.tone}}</b>
+          <button ng-click="removeMsg($index)">x</button>
+        </li>
+      </ul>
+      Say <input type="text" ng-model="newMessage"><button ng-click="saveMsg()">Post</button>
+    </script>
+<hr/>
+Coded by R&eacute;mi Serra, IBM Analytics Services, using:<br/>
+	<ul>
+	<li>Angular</li>
+	<li>Node.js & Express</li>
+	<li>MongoDB & mongoose</li>
+	<li>Watson tone analyzer</li>
+	</ul>
+	
+    <script>
+      angular.module('app', ['ngRoute', 'ngResource'])
+        //---------------
+        // Services
+        //---------------
+        // $resource is an Angular concept to bridge with the ressource REST api
+        // here we create a MessagesFactory angular object that bridges to our messages REST API
+        // see https://www.sitepoint.com/creating-crud-app-minutes-angulars-resource/
+        .factory('MessagesFactory', ['$resource', function($resource){
+          return $resource('/messages/:id', null, {
+          	//get,save,query,remove,delete are implicit as forward to the REST API of messages
+          	//We add the 'update' keyword and map it to a PUT call
+            'update': { method:'PUT' }
+          });
+        }])        
+
+        //---------------
+        // Filters
+        //---------------        
+        .filter('messageFilter', function() {
+		  return function(items, searchInfo) {		    
+		    //var qfrom = '';
+		    var qto = '';
+		    var qtone = '';
+		    if (searchInfo) {
+		    	//if(searchInfo.from)
+		    	//	qfrom = searchInfo.from.toUpperCase();
+		    	if( searchInfo.to)
+		    		qto = searchInfo.to.toUpperCase();
+		    	if( searchInfo.tone)
+		    		qtone = searchInfo.tone.toUpperCase();		    		
+		    }		    
+		    return items.filter(function(element, index, array) {
+		      var from = element.from.toUpperCase();
+		      var to = element.to.toUpperCase();
+		      //the search is already restricted to messages where I am either to or from
+		      //filter on qto or ALL
+		      return ((to===qto || from===qto || 'ALL'===qto || ''===qto) && (element.tone===qtone || ''===qtone));
+		    });
+		
+		  };
+		})
+
+        //---------------
+        // Controllers
+        //---------------
+        .controller('MessageController', ['$scope', 'MessagesFactory', function ($scope, MessagesFactory) {
+          $scope.messagesList = MessagesFactory.query();//Here angular will call the GET api on / to retrieve all items          
+          
+          $scope.refreshBtn = function(){
+          	//refresh the message list on a given user
+          	$scope.messagesList = MessagesFactory.query({user:$scope.msgSearchInfo.from});
+          }
+          
+          $scope.saveMsg = function(){
+            if(!$scope.newMessage || $scope.newMessage.length < 1 || !$scope.msgSearchInfo.from || $scope.msgSearchInfo.from.length < 1 || !$scope.msgSearchInfo.to || $scope.msgSearchInfo.to.length < 1) return;
+            //Create a Message (we did the mapping MessagesFactory <-> messages endpoint when createing the factory
+            var messageToCreate = new MessagesFactory({ from: $scope.msgSearchInfo.from, to: $scope.msgSearchInfo.to, text: $scope.newMessage });
+            //Save to DB
+            messageToCreate.$save(function(){//this calls our messages POST api
+              $scope.messagesList.push(messageToCreate);
+              $scope.newMessage = ''; // then clear textbox
+            });
+          }
+
+          $scope.updateMsg = function(index){
+            var messageToUpdate = $scope.messagesList[index];
+            MessagesFactory.update({id: messageToUpdate._id}, messageToUpdate);//this calls our messages PUT api
+          }
+
+          $scope.removeMsg = function(index){
+            var messageToRemove = $scope.messagesList[index];
+            //console.log('index immediate delete');
+            MessagesFactory.remove({id: messageToRemove._id}, function(){//this calls our messages DELETE api
+              $scope.messagesList.splice(index, 1);//after the REST call we remove from the html table
+            });
+          }
+        }])
+
+        //---------------
+        // Routes
+        //---------------
+
+        .config(['$routeProvider', function ($routeProvider) {
+          $routeProvider
+            .when('/', {
+              templateUrl: '/messages.html',
+              controller: 'MessageController'
+            });
+            
+        }]);
+    </script>
+  </body>
+</html>
