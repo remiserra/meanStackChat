@@ -1,6 +1,6 @@
 # Message API
 
-Chat App using Angular, NodeJS, ExpressJS and MongoDB RESTful API.
+Chat App using Angular, NodeJS, ExpressJS and MongoDB via mongoose.
 
 The chat messages are analyzed by Watson Tone Analyzer to extract sentiment. 
 
