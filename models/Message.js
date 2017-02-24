@@ -5,6 +5,7 @@ var MessageSchema = new mongoose.Schema({
   from: String,
   to: String,
   text: String,
+  translation : String,
   read: { type: Boolean, default: false },
   tone: String
 });

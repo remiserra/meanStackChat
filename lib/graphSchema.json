@@ -1,0 +1,30 @@
+{
+  "propertyKeys": [
+    {"name": "name", "dataType": "String", "cardinality": "SINGLE"},
+    {"name": "text", "dataType": "String", "cardinality": "SINGLE"},
+    {"name": "tone", "dataType": "String", "cardinality": "SINGLE"},
+    {"name": "time", "dataType": "String", "cardinality": "SINGLE"}
+  ],
+  "vertexLabels": [
+    {"name": "person"}
+  ],
+  "edgeLabels": [
+    {"name": "message", "multiplicity": "MULTI"}
+  ],
+  "vertexIndexes": [
+    {"name": "vByName",
+      "propertyKeys": ["name"],
+      "composite": true,
+      "unique": true}
+  ],
+  "edgeIndexes" :[
+    {"name": "eByTime",
+      "propertyKeys": ["time"],
+      "composite": true,
+      "unique": false},
+  {"name": "eByTone",
+      "propertyKeys": ["tone"],
+      "composite": true,
+      "unique": false}
+  ]
+}

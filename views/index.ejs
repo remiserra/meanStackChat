@@ -24,17 +24,17 @@
        
       Filter: <select ng-model="msgSearchInfo.tone">
 	      	<option value="">---</option>
-	      	<option value=">:">Anger</option> 
-			<option value=":$">Disgust</option>
-			<option value=":O">Fear</option> 
-			<option value=":)">Joy</option> 
-			<option value=":(">Sadness</option>			
+	      	<option value="Anger">Anger</option> 
+			<option value="Disgust">Disgust</option>
+			<option value="Fear">Fear</option> 
+			<option value="Joy">Joy</option> 
+			<option value="Sadness">Sadness</option>			
 	    </select><br>
       
       <ul>
         <li ng-repeat="message in messagesList | orderBy:['time'] | messageFilter:msgSearchInfo">
           <input type="checkbox" ng-model="message.read" ng-change="updateMsg($index)">
-          {{message.time | date:'yyyy-MM-dd HH:mm:ss'}} - {{message.from}} to {{message.to}}	: {{message.text}}	<b>{{message.tone}}</b>
+          {{message.time | date:'yyyy-MM-dd HH:mm:ss'}} - {{message.from}} to {{message.to}}	: {{message.text}}	(<em>{{message.translation}}</em>)	<b>{{message.tone}}</b>
           <button ng-click="removeMsg($index)">x</button>
         </li>
       </ul>
@@ -47,6 +47,7 @@ Coded by R&eacute;mi Serra, IBM Analytics Services, using:<br/>
 	<li>Node.js & Express</li>
 	<li>MongoDB & mongoose</li>
 	<li>Watson tone analyzer</li>
+	<li>Watson language identifier and translator</li>
 	</ul>
 	<a href="https://github.com/remiserra/meanStackChat/">Get it on github</a><br/>
 	

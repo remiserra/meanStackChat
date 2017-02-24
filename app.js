@@ -1,3 +1,4 @@
+//Load modules
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -35,8 +36,8 @@ if (process.env.VCAP_SERVICES) {
 	  }).then(() =>  console.log('bluemix connection succesful'))
 	  .catch((err) => console.error('error connecting to bluemix '+cm.uri+' : '+err));
   }
-}else{//connect to local
-	  var dbURI = 'mongodb://admin:xxxPWDxxx@bluemix-sandbox-dal-9-portal.1.dblayer.com:23203/admin?ssl=true';
+}else{////FOR LOCAL
+	  var dbURI = 'mongodb://admin:VBEENYCXOMKTJUIV@bluemix-sandbox-dal-9-portal.1.dblayer.com:23203:23203/admin?ssl=true';
 	  mongoose.connect(dbURI, {
 			  server: {sslValidate: false}
 	  })
@@ -73,12 +74,14 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
+console.log('env:',app.get('env'));
 
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
+	console.log(err);
+	res.status(err.status || 500);
     res.render('error', {
       message: err.message,
       error: err

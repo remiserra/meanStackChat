@@ -1,0 +1,28 @@
+//create
+def v1 = graph.addVertex("name", "Andy", label, "person");
+def v2 = graph.addVertex("name", "Betty", label, "person");
+def e = v1.addEdge("message", v2, "text", "blah");
+
+//query
+def gt = graph.traversal();
+gt.V().hasLabel("person").has("name", "Andy").out("message");//returns Betty vertex
+
+def gt = graph.traversal();
+gt.V().hasLabel("person").has("name", "Andy").outE("message");//returns Message Edge
+
+////
+
+def gt = graph.traversal();
+
+gt.V().hasLabel("person").has("name", "me").out("message").text;
+
+gt.V().hasLabel("person").has("name", "me").out("message").values("tone");
+gt.V().hasLabel("person").has("name", "me").out("message").values("text");
+gt.V().hasLabel("person").has("name", "me").out("message").values("time");
+
+//gt : graph
+//V : all vertices
+//hasLabel : filter on label
+//has(property) : filter on property value
+//out(edge label) : follows all edges with this label - can have several,labels
+//.property : get property value
