@@ -1,4 +1,4 @@
-// Handle REST API 
+// Handle REST API
 var express = require('express');
 var router = express.Router();
 //Message is my mongoose model for the messages collection
@@ -58,20 +58,24 @@ function createVertexPerson(name,then){
 	    uri: graphDB.apiURL + '/vertices?label=person&name='+name,
 	    },function (err,resp,body) {
 	    	if (err) console.log(err);
+	    	var body = JSON.parse(body);//here if I don't parse it doesnt work
 	    	//console.log('body',body);
-	    	if(JSON.parse(body).result.data.length === 0){
-	    		var personJson = {'label':'person','properties':{'name':name}}
+	    	if(body.result.data.length === 0){
+	    		var personJson = {'label':'person','properties':{'name':name}};
+	    		console.log('GraphDB:personJson:',personJson);
 	    		//create
 	    		request.post({
 	    		    headers: {'Authorization': graphDB.sessionToken},
 	    		    uri: graphDB.apiURL + '/vertices',
-	    		    json: personJson},function (err,resp) {
+	    		    json: personJson},function (err,resp,body) {
 	    				if (err) console.log(err);
-	    			    vertex1 = JSON.parse(body).result.data[0].id;
+	    				console.log('GraphDB:Vertex:Created:',body.result.data);//Here the body seems to be already parsed
+	    			    vertex1 = body.result.data[0].id;
 	    			    then(vertex1);
 	    			});
 	    	}else{
-	    		vertex1 = JSON.parse(body).result.data[0].id;	
+	    		console.log('GraphDB:Vertex:Existing:',body.result.data);
+	    		vertex1 = body.result.data[0].id;	
 	    		then(vertex1);
 	    	}	    	
 	});	
@@ -98,7 +102,7 @@ function createEdgeMessage(v1,v2,text,tone){
 	request(postEdgeOpts,function (err,res,body) {
 		if (err) console.log(err);
 		//console.log(body);
-		console.log(body.result.data);
+		console.log('GraphDB:Edge:',body.result.data);
 		//var edge1 = JSON.parse(body).result.data[0].id;
 	});
 }
