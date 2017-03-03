@@ -13,6 +13,7 @@
     "express": "~4.13.4",
     "mongoose": "4.5.8",
     "morgan": "~1.7.0",
+    "request": "~2.79.0",
     "serve-favicon": "~2.3.0",
     "watson-developer-cloud": "^2.15.2"
   }
