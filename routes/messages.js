@@ -81,10 +81,10 @@ function createVertexPerson(name,then){
 	});	
 } 
 
-function createEdgeMessage(v1,v2,text,tone){
+function createEdgeMessage(vFrom,vTo,text,tone){
 	var body = {
-	        'inV': v1,
-	        'outV': v2,
+	        'outV': vFrom,
+	        'inV': vTo,
 	        'label': 'message',
 	        'properties': {
 		        'time': Date.now(),
@@ -109,9 +109,9 @@ function createEdgeMessage(v1,v2,text,tone){
 
 function putInGraphDB(req,tone){
 	//console.log('graphDB:',graphDB);
-	createVertexPerson(req.body.from,function(v1){
-		createVertexPerson(req.body.to,function(v2){
-			createEdgeMessage(v1,v2,req.body.text,tone);
+	createVertexPerson(req.body.from,function(vFrom){
+		createVertexPerson(req.body.to,function(vTo){
+			createEdgeMessage(vFrom,vTo,req.body.text,tone);
 		});
 	});
 }
