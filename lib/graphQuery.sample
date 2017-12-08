@@ -13,12 +13,8 @@ gt.V().hasLabel("person").has("name", "Andy").outE("message");//returns Message 
 ////
 
 def gt = graph.traversal();
+gt.V().hasLabel("person").has("name", "remi").out("message");//returns all recipients of messages from remi
 
-gt.V().hasLabel("person").has("name", "me").out("message").text;
-
-gt.V().hasLabel("person").has("name", "me").out("message").values("tone");
-gt.V().hasLabel("person").has("name", "me").out("message").values("text");
-gt.V().hasLabel("person").has("name", "me").out("message").values("time");
 
 //gt : graph
 //V : all vertices
